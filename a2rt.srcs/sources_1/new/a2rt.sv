@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps
+`default_nettype none
 //////////////////////////////////////////////////////////////////////////////////
 // Company: Buddies
 // Engineer: Marco&Binaryman
@@ -34,23 +35,23 @@ module a2rt #(
 )
 (
     // System signals
-    input  logic clk,
-    input  logic rst_n,
+    input  wire clk,
+    input  wire rst_n,
 
     // SLAVE SIDE
 
     // control signals
     output logic rtr_o, // ready_o
-    input  logic rts_i, // valid_i
-    input  logic sow_i, // first_i
-    input  logic eow_i, // last_i
+    input  wire rts_i, // valid_i
+    input  wire sow_i, // first_i
+    input  wire eow_i, // last_i
     // data in
-    input logic [DATA_WIDTH-1:0] pixel_i,
+    input  wire [DATA_WIDTH-1:0] pixel_i,
 
     // MASTER SIDE
 
     // control signals
-    input  logic rtr_i, // ready_i
+    input  wire rtr_i, // ready_i
     output logic rts_o, // valid_o
     output logic sow_o, // first_o
     output logic eow_o, // last_o
@@ -92,9 +93,10 @@ logic [$clog2(BRAM_DEPTH)-1:0] avrg_addr;
 
 // pointer to know which BRAM is used to accumulate
 // 0 for BRAM A ; 1 for BRAM B
+logic swap;
 logic bram_pointer;
 
-// selected char
+// selected char after average
 logic [7:0] selected_char;
 
 // pix monochrome selected after VGA LUT
@@ -132,13 +134,16 @@ end
 always_ff @(posedge clk or negedge rst_n) begin
     if ( ~rst_n ) begin
         y_lines_counter <= 0;
+        swap <= 0;
     end
     else if ( rts_i & rtr_i ) begin
         if ( (x_pixels_counter >= SCREEN_WIDTH-1) ) begin
-            if ( y_lines_counter >= ASCII_HEIGHT-1 )  begin  // reset lines when last pixel of last line
+            if ( y_lines_counter >= ASCII_HEIGHT-1 ) begin  // reset lines when last pixel of last line
                 y_lines_counter <= 0;
+                swap <= 1;
             end
             else begin
+                swap <= 0;
                 y_lines_counter <= y_lines_counter + 1;
             end
         end
@@ -147,12 +152,14 @@ end
 
 
 // bram pointer
-// WIP thanks to y_lines_counter
+always_comb begin
+    if ( swap ) begin
+        bram_pointer <= ~bram_pointer;
+    end
+end
+
 
 // Average accumulation
-// always_ff @() begin
-//
-// end
 
 ascii_lut ascii_lut_inst (
     .id   ( ),
@@ -169,3 +176,4 @@ assign rtr_o = 1;
 
 
 endmodule
+`default_nettype wire

@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps
+`default_nettype none
 //////////////////////////////////////////////////////////////////////////////////
 // Company: Buddies
 // Engineer: Binaryman&Marco
@@ -31,3 +32,4 @@ bitmap_vga_rom bitmap_vga_rom_inst (
  );
 
 endmodule
+`default_nettype wire

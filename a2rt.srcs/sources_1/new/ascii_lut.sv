@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps
+`default_nettype none
 //////////////////////////////////////////////////////////////////////////////////
 // Company: Buddies
 // Engineer: Marco&Binaryman
@@ -19,7 +20,7 @@
 
 module ascii_lut
 (
-    input [5:0] id,
+    input  wire [5:0] id,
     output logic [7:0] char
 );
     
@@ -78,3 +79,4 @@ module ascii_lut
     end
     
 endmodule
+`default_nettype wire

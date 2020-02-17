@@ -21,7 +21,7 @@ module rom #(
     output reg [ROM_WIDTH-1:0] output_data
 );
 
-    (* rom_style="block" *)
+    (* rom_style=BLOCK_TYPE *)
     reg [ROM_WIDTH-1:0] ROM [(2**ROM_ADDR_BITS)-1:0];
 
     initial
